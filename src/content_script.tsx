@@ -1,6 +1,5 @@
-import Message from "./communication"
-
-type RequestHandler = (message: Message) => Promise<Message>
+import { Message, RequestHandler } from "./communication"
+import port from "./content-port"
 
 const requestMap = new Map<string, RequestHandler>()
 
@@ -54,11 +53,19 @@ addListener("test", testHandler)
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
-        var t = await sendToBackground({
-            route: "test",
-            data: "message from content",
-        })
-        console.log(t)
+        // var t = await sendToBackground({
+        //     route: "test",
+        //     data: "message from content",
+        // })
+        // console.log(t)
     },
     false
 )
+
+// port.addListener("test", testHandler)
+
+port.sendToBackground({ route: "test", data: "message from content" }).then(
+    response => console.log("response", response)
+)
+
+port.addListener("test", testHandler)

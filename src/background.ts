@@ -1,8 +1,7 @@
-import Message from "./communication"
+import port from "./background-port"
+import { Message, RequestHandler } from "./communication"
 
 console.log("[background] background started")
-
-type RequestHandler = (message: Message) => Promise<Message>
 
 const requestMap = new Map<string, RequestHandler>()
 
@@ -62,15 +61,11 @@ async function sendToActiveTab(message: Message): Promise<Message | null> {
     })
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log(
-        sender.tab
-            ? "from a content script:" + sender.tab.url
-            : "from the extension"
+port.addListener("test", testHandler)
+setTimeout(async () => {
+    port.sendToActiveTab({ route: "test", data: "test data" }).then(response =>
+        console.log("response", response)
     )
-    if (request.greeting === "hello") sendResponse({ farewell: "goodbye" })
-})
-// setTimeout(async () => {
-//     var t = await sendToActiveTab({ route: "test", data: "test data" })
-//     console.log(t)
-// }, 4000)
+    // var t = await sendToActiveTab({ route: "test", data: "test data" })
+    // console.log(t)
+}, 4000)
